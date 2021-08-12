@@ -65,7 +65,7 @@ def delete_player(request, pk):
 # ----Top players-----
 def top_players(request):
 
-    top_all_player = Players.objects.values('name', 'email', 'country').annotate(number_of_game=Count('game')).annotate(total_score=Sum('score'))
+    top_all_player = Players.objects.values('name', 'email', 'country').annotate(number_of_game=Count('game')).annotate(total_score=Sum('score')).order_by('-score')
 
     paginator = Paginator(top_all_player, 5)
     page_number = request.GET.get('page')

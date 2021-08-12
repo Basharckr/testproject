@@ -49,7 +49,7 @@ function addPlayers() {
 
           if (response == "success") {
          
-            // $('#formAddplayer')[0].reset();
+            $('#formAddplayer')[0].reset();
 
             $("#addPlayer").modal("hide");
             $("#tablediv").load(" #tablediv");
