@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<style>
+    .error {
+        color: red;
+    }
+
+    .look {
+        text-align: center
+    }
+
+</style>
+<div class="container" >
+    <div class="row" style="margin-top: 2rem; margin-left: 1rem;">
+        <a href="{% url 'top-players' %}"><button type="button" class="btn btn-primary">Top Players</button></a>
+        <!--Add player Button trigger modal -->
+        <button type="button" class="btn btn-success"  data-toggle="modal" data-target="#addPlayer">
+            Add Player
+        </button>
+        
+
+    </div>
+    <div id="tablediv">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="look" scope="col">#</th>
+                    <th class="look" scope="col">Name</th>
+                    <th class="look" scope="col">Email</th>
+                    <th class="look" scope="col">Country</th>
+                    <th class="look" scope="col">Game</th>
+                    <th class="look" scope="col">Score</th>
+                    <th class="look" scope="col">Action</th>
+
+
+                </tr>
+            </thead>
+            <tbody style="background-color: white;">
+                {% for player in page_obj %}
+                <tr>
+                    <th class="look" scope="row">{{forloop.counter}}</th>
+                    <td class="look">{{player.name}}</td>
+                    <td class="look">{{player.email}}</td>
+                    <td class="look">{{player.country}}</td>
+                    <td class="look">{{player.game}}</td>
+                    <td class="look">{{player.score}}</td>
+                    <td class="look">
+                        <button type="button" class="btn btn-dark btn-sm" data-toggle="modal"
+                            data-target="#editPlayer-{{player.id}}">Edit</button>
+                        <button type="button" onclick="deletePlayer('{{player.id}}')"
+                        onclick="" class="btn btn-danger btn-sm">Delete</button>
+                    </td>
+
+                </tr>
+                <!-- Edit-player-Modal -->
+                <div class="modal fade" id="editPlayer-{{player.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Edit Player</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form id="formEditplayer" method="POST" action="{% url 'edit-player' pk=player.id %}">{%csrf_token%}
+
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Player name</label>
+                                        <input type="text" class="form-control" id="name" name="name"
+                                            aria-describedby="emailHelp" placeholder="Enter name" value="{{player.name}}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Email address</label>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            aria-describedby="emailHelp" placeholder="Enter email" value="{{player.email}}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Country</label>
+                                        <input type="text" class="form-control" id="country" name="country"
+                                            aria-describedby="emailHelp" placeholder="Enter country name" value="{{player.country}}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Game</label>
+                                        <input type="text" class="form-control" id="game" name="game"
+                                            aria-describedby="emailHelp" placeholder="Enter game" value="{{player.game}}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Score</label>
+                                        <input type="number" class="form-control" id="score" name="score"
+                                            placeholder="Enter score" value="{{player.score}}" required>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" onclick="editPlayers('{{player.id}}')" class="btn btn-primary">Submit</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    <div class="row" style="float: right;margin-right: 1rem;">
+        <div class="pagination" >
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}"><< Prev</a>
+                {% endif %}
+                {% for i in page_obj.paginator.page_range %}
+                {% if page_obj.number == i %}
+                  <span>{{ i }} <span class="sr-only">(current)</span></span>
+                {% else %}
+                  <a href="?page={{ i }}">{{ i }}</a>
+                {% endif %}
+              {% endfor %}
+             
+    
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Next>> </a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Add player Modal -->
+<div class="modal fade" id="addPlayer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Player</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formAddplayer">{%csrf_token%}
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Player name</label>
+                        <input type="text" class="form-control" id="name" name="name" aria-describedby="emailHelp"
+                            placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp"
+                            placeholder="Enter email">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Country</label>
+                        <input type="text" class="form-control" id="country" name="country" aria-describedby="emailHelp"
+                            placeholder="Enter country name">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Game</label>
+                        <input type="text" class="form-control" id="game" name="game" aria-describedby="emailHelp"
+                            placeholder="Enter game">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Score</label>
+                        <input type="number" class="form-control" id="score" name="score" placeholder="Enter score">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" onclick="addPlayers()" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

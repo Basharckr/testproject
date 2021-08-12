@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Top players{% endblock %}
+{% block content %}
+<style>
+
+    .look {
+        text-align: center
+    }
+
+</style>
+<div class="container">
+    <div class="row" style="margin-top: 2rem; margin-left: 1rem;">
+        <a href="{% url 'home' %}"><button type="button" class="btn btn-primary">Add Data</button></a>
+      
+    </div>
+    <div class="row" style="margin-left: 1rem;">
+      <h4>Top Players</h4>
+    </div>
+    <div id="tablediv">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="look" scope="col">#ID</th>
+                    <th class="look" scope="col">Player Name</th>
+                    <th class="look" scope="col">Player Email</th>
+                    <th class="look" scope="col">Country</th>
+                    <th class="look" scope="col">No of games</th>
+                    <th class="look" scope="col">Total Score</th>
+
+
+                </tr>
+            </thead>
+            <tbody style="background-color: white;">
+                {% for player in page_obj %}
+                <tr>
+                    <th class="look" scope="row">{{forloop.counter}}</th>
+                    <td class="look">{{player.name}}</td>
+                    <td class="look">{{player.email}}</td>
+                    <td class="look">{{player.country}}</td>
+                    <td class="look">{{player.number_of_game}} games</td>
+                    <td class="look">{{player.total_score}}</td>
+              
+                </tr>
+                
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    <div class="row" style="float: right; margin-right: 1rem;">
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}"> << Prev</a>
+                {% endif %}
+                {% for i in page_obj.paginator.page_range %}
+                {% if page_obj.number == i %}
+                  <span>{{ i }} <span class="sr-only">(current)</span></span>
+                {% else %}
+                  <a href="?page={{ i }}">{{ i }}</a>
+                {% endif %}
+              {% endfor %}
+             
+    
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Next >></a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+   
+</div>
+
+{% endblock %}
